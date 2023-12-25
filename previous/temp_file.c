@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   temp_file.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchumane <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/07 14:55:33 by wchumane          #+#    #+#             */
-/*   Updated: 2023/10/09 13:37:12 by wchumane         ###   ########.fr       */
+/*   Updated: 2023/12/25 20:10:12 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	main(void)
   char	*c1 = malloc(0); // noooo
   char	*c2 = malloc(0); // noooo
 
-	int		fd;
+  int		fd;
   int		fd1;
   int		fd2;
   int		size;

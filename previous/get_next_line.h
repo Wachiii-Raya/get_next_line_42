@@ -3,28 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wchumane <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/22 22:19:08 by wchumane          #+#    #+#             */
-/*   Updated: 2023/12/26 01:12:43 by wchumane         ###   ########.fr       */
+/*   Created: 2023/10/07 14:54:51 by wchumane          #+#    #+#             */
+/*   Updated: 2023/10/09 00:21:13 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#ifndef GET_NEXT_LINE
-# define GET_NEXT_LINE
-
-#define BUFFER_SIZE 255
-
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 typedef	struct s_node
 {
+	int		fd;	// or size_t??
 	char	*str;
 	struct s_node	*next;
 }	t_node;
 
-#endif
-
+int	buf_size;
+buf_size = 20;

@@ -3,95 +3,177 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wchumane <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/07 21:48:35 by wchumane          #+#    #+#             */
-/*   Updated: 2023/10/08 11:36:47 by wchumane         ###   ########.fr       */
+/*   Created: 2023/12/22 22:10:06 by wchumane          #+#    #+#             */
+/*   Updated: 2023/12/26 01:09:22 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+// int	is_newline_found()
+
+size_t	ft_strlen(const char *str)
+{
+	int	counter;
+
+	counter = 0;
+	while (str[counter] != '\0')
+	{
+		counter++;
+	}
+	return (counter);
+}
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
+
+	i = 0;
+	if (size > 0)
+	{
+		while (src[i] && i < (size - 1))
+		{
+			dst[i] = src[i];
+			i++;
+		}
+		dst[i] = 0;
+	}
+	while (src[i])
+		i++;
+	return (i);
+}
+
+// string duplicate from libft
+char	*ft_strdup(const char *s1)
+{
+	char	*ptr;
+	size_t	len;
+
+	len = ft_strlen(s1) + 1;
+	ptr = malloc(len);
+	if (!ptr)
+		return (NULL);
+	ft_strlcpy(ptr, s1, len);
+	return (ptr);
+}
+
+
+//append the read buffer into t_node *str[4095]
+void	append_buffer_to_node(t_node **str, char *buffer)
+{
+	t_node	*new_node;
+	t_node	*previous_node;
+
+	// duplicate buffer 
+	new_node = malloc(sizeof(t_node));
+	if (!new_node)
+		return ;
+	new_node->str = ft_strdup(buffer);
+	new_node->next = NULL;
+	
+	// add new_node at the end of previous node, but if this is 1st node -> return ; if not, 
+	// point next of the previous node to head of new_node
+	if (*str == NULL)
+	{
+		*str = new_node;
+		return ;
+	}
+	else
+	{
+		while (!(previous_node->next))
+			previous_node = previous_node->next;
+		previous_node->next = new_node;
+	}
+}
+
+void	*read_line_to_node(t_node **str, int fd)
+{
+	char	*buffer;
+	int		read_length;
+
+	// memory allocation
+	buffer = malloc(BUFFER_SIZE + 1);
+	read_length = read(fd, buffer, BUFFER_SIZE);
+	if (read_length == 0)
+		return (0);
+	// printf("buffer: %s", buffer); << then put this string to linked list
+	// TODO: reduce buffer size <- no need to define a large number
+	*buffer = *buffer + '\0';
+	// printf("buffer: %s", buffer);
+	
+}
+
 char	*get_next_line(int fd)
 {
-	// declaration
-	size_t	size;
-	char	*buf; // malocc!!!!
+	// step 1: define static val
+	static t_node	*str[4095];
+	char			*line;
+	int				is_newline_found;
 
-	buf =  malloc(buf_size);
-	// check fd -> if not exist, create one. if exist, point to this file
-	if (fd == -1 || fd < 0)
-		return (NULL);
-	// malloc buffer
-
-	// read + while loop until '\n' is found
-	size = read(fd, buf, buf_size);
-	printf("the number of bytes read on success: %zu\n", size);
-	printf("content inside: %s\n", buf);
-
-
-	// close file
-	close(fd);
-	// return 1 line
-	return (buf);
+	is_newline_found = 0;
+	// step 2: condition checking -> fd, buf_size, returned value of read() for just 1st byte
+	// TODO: check that fd must be greater that 0 or 2
+	if (fd < 0 && BUFFER_SIZE <= 0)
+		return (0);
+	if (read(fd, NULL, 0 ))
+		return (0);
+	// step 3: create node of read string ntil '\n' is found
+	// while (is_newline_found != 1)
+	// {
+		
+	// }
+	
 }
 
-
+/*
 int	main(void)
 {
-	// declaration
-	size_t	fd;
-	size_t	size;
-	char	*str;
-	// check fd
 
-	fd = open("nango.txt", O_RDONLY, 0666);
+	int		fd;
+	char	buf[255];
+	int		size;
+
+	fd = open("test.txt", O_RDONLY);
+	// printf("fd: %d\n", fd);
 	if (fd == -1)
 		return 0;
-	str = malloc(buf_size);
+	char	*str = malloc(0);
 	str = get_next_line(fd);
-	printf("output: %s\n", str);
-	// malloc str, size all text file + 1 <- this int from read()
-	//while loop until found '\0'
-		// read line <return 1 line>
-		// append '\n'
-	// append '\0'
-
 }
+*/
 
-// print the linked list value
-// void printLinkedlist(t_node *p) {
-//   while (p != NULL) {
-//     printf("%d ", p->str);
-//     p = p->next;
-//   }
-// }
-
+// ------- test: read line function [/]---------
 
 // int	main(void)
 // {
-// 	// Initialize nodes
-//   t_node *head;
-//   t_node *one = NULL;
-//   t_node *two = NULL;
-//   t_node *three = NULL;
+// 	int	fd;
+// 	t_node	*str[255];
 
-//   // Allocate memory
-//   one = malloc(sizeof(t_node));
-//   two = malloc(sizeof(t_node));
-//   three = malloc(sizeof(t_node));
-
-//   // Assign value values
-//   one->str = 1;
-//   two->str = 2;
-//   three->str = 3;
-
-//   // Connect nodes
-//   one->next = two;
-//   two->next = three;
-//   three->next = NULL;
-
-//   // printing node-value
-//   head = one;
-//   printLinkedlist(head);
+// 	fd = open("test.txt", O_RDONLY);
+// 	read_line_to_node(str, fd);
 // }
+
+void print_list(t_node *node)
+{
+    while (node != NULL)
+    {
+        printf("%s\n", node->str);
+        node = node->next;
+    }
+}
+
+// ------- test: append buffer to node function [/]---------
+int	main(void)
+{
+	int	fd;
+	t_node	*str[255];
+	
+	
+	// fd = open("test.txt", O_RDONLY);
+	append_buffer_to_node(str, "hey gurlll");
+	t_node	*tmp = *str;
+	print_list(tmp);
+	
+}
