@@ -35,49 +35,49 @@
 // 	return (ptr);
 // }
 
-// size_t	ft_strlen(const char *str)
-// {
-// 	int	counter;
+size_t	ft_strlen(const char *str)
+{
+	int	counter;
 
-// 	counter = 0;
-// 	while (str[counter] != '\0')
-// 	{
-// 		counter++;
-// 	}
-// 	return (counter);
-// }
+	counter = 0;
+	while (str[counter] != '\0')
+	{
+		counter++;
+	}
+	return (counter);
+}
 
-// size_t	ft_strlcpy(char *dst, const char *src, size_t size)
-// {
-// 	size_t	i;
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
+{
+	size_t	i;
 
-// 	i = 0;
-// 	if (size > 0)
-// 	{
-// 		while (src[i] && i < (size - 1))
-// 		{
-// 			dst[i] = src[i];
-// 			i++;
-// 		}
-// 		dst[i] = 0;
-// 	}
-// 	while (src[i])
-// 		i++;
-// 	return (i);
-// }
+	i = 0;
+	if (size > 0)
+	{
+		while (src[i] && i < (size - 1))
+		{
+			dst[i] = src[i];
+			i++;
+		}
+		dst[i] = 0;
+	}
+	while (src[i])
+		i++;
+	return (i);
+}
 
-// char	*ft_strdup(const char *s1)
-// {
-// 	char	*ptr;
-// 	size_t	len;
+char	*ft_strdup(const char *s1)
+{
+	char	*ptr;
+	size_t	len;
 
-// 	len = ft_strlen(s1) + 1;
-// 	ptr = (char *)malloc(len);
-// 	if (!ptr)
-// 		return (NULL);
-// 	ft_strlcpy(ptr, s1, len);
-// 	return (ptr);
-// }
+	len = ft_strlen(s1) + 1;
+	ptr = (char *)malloc(len);
+	if (!ptr)
+		return (NULL);
+	ft_strlcpy(ptr, s1, len);
+	return (ptr);
+}
 
 //-----------------------------------------
 
@@ -91,7 +91,11 @@ int	is_newline_found(char *buffer)
 	while (buffer[i] == '\0')
 	{
 		if (buffer[i] == '\n')
-			return	(1);
+		{
+			// delete char after '\n'
+			buffer[i] = '\0';
+			return (1);
+		}
 		i++;
 	}
 	return (0);
@@ -127,12 +131,22 @@ char	*convert_list_to_line(t_list *node)
 		length += ft_strlen(node->str);
 		node = node->next;
 	}
+	// line = (char *)malloc(sizeof(char) * (length + 1));
+	// if (!line)
+	// 	return (NULL);
+	// while (head != NULL)
+	// {
+	// 	line = ft_strjoin(line, head->str);
+	// 	head = head->next;
+	// }
+	// return (line);
+	//convert linked list to char *line aka a single line
 	line = (char *)malloc(sizeof(char) * (length + 1));
 	if (!line)
 		return (NULL);
 	while (head != NULL)
 	{
-		line = ft_strjoin(line, head->str);
+		ft_strlcpy(line, head->str, length + 1);
 		head = head->next;
 	}
 	return (line);
@@ -162,15 +176,34 @@ void	append_buffer_to_node(t_list **str, char *buffer)
 	}
 }
 
-void	*read_buffer(char *temp, int fd)
-{
-	int		read_length;
+// void	*read_buffer(char *temp, int fd)
+// {
+// 	int		read_length;
 
-	read_length = read(fd, temp, BUFFER_SIZE);
-	if (read_length == 0)
-		return NULL;
-	*temp = *temp + '\0';
-	return (temp);
+// 	read_length = read(fd, temp, BUFFER_SIZE);
+// 	if (read_length == 0)
+// 		return NULL;
+// 	*temp = *temp + '\0';
+// 	return (temp);
+// }
+
+char	*read_buffer(int fd)
+{
+    char	*temp = malloc(BUFFER_SIZE + 1); // Allocate memory for the buffer
+    int		read_length;
+
+    if (temp == NULL) {
+        return NULL; // Return NULL if memory allocation failed
+    }
+
+    read_length = read(fd, temp, BUFFER_SIZE);
+    if (read_length <= 0) {
+        free(temp); // Free the buffer if read failed or reached end of file
+        return NULL;
+    }
+
+    temp[read_length] = '\0'; // Properly null-terminate the buffer
+    return temp;
 }
 
 char	*get_next_line(int fd)
@@ -188,12 +221,13 @@ char	*get_next_line(int fd)
 		return (0);
 	if (read(fd, NULL, 0 ))
 		return (0);
-	// step 3: create node of read string ntil '\n' is found
+	// step 3: create node of read string until '\n' is found
 	while (is_newline_flag != 1)
 	{	
 		// *read_buff = read_buffer
 		temp = (char *)malloc(BUFFER_SIZE + 1);
-		read_buffer(temp, fd);
+		// read_buffer(temp, fd);
+		temp = read_buffer(fd);
 		is_newline_flag = is_newline_found(temp);
 		append_buffer_to_node(str_node, temp);
 	}
@@ -260,4 +294,26 @@ char	*get_next_line(int fd)
 // 	t_node	*tmp = *str;
 // 	print_list(tmp);
 	
+// }
+int	main(void)
+{
+    int	fd;
+	char	*line;
+
+    fd = open("test.txt", O_RDONLY);
+	line = malloc(sizeof(char) * 100);
+	line = get_next_line(fd);
+	printf("line: %s\n", line);
+}
+
+// ------- test: read_buffer function ---------
+// int main(void)
+// {
+// 	int		fd;
+// 	char	*temp;
+
+// 	fd = open("test.txt", O_RDONLY);
+// 	temp = (char *)malloc(BUFFER_SIZE + 1);
+// 	temp = read_buffer(fd);
+// 	printf("temp: %s\n", temp);
 // }

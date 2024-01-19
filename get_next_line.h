@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 typedef	struct s_list
 {
@@ -30,14 +30,14 @@ typedef	struct s_list
 }	t_list;
 
 char	*ft_strjoin(char const *s1, char const *s2);
-int	is_newline_found(char *buffer);
+int		is_newline_found(char *buffer);
 size_t	ft_strlen(const char *str);
 size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 char	*ft_strdup(const char *s1);
 void	*free_all_node(t_list **node);
 char	*convert_list_to_line(t_list *node);
 void	append_buffer_to_node(t_list **str, char *buffer);
-void	*read_buffer(char *temp, int fd);
+char	*read_buffer(int fd);
 char	*get_next_line(int fd);
 
 #endif
