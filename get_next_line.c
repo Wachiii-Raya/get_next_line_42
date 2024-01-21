@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/01/21 20:21:36 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/01/21 21:58:37 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ char	*get_line(char **temp55)
 	*temp55 = *temp55 + length;
 	**temp55 = '\0';
 	(*temp55)++;
-	free(temp1);
+	// free(temp1);
 	return (line);
 }
 
@@ -80,17 +80,19 @@ char	*get_line(char **temp55)
 char	*read_line(int fd, char *temp, char *buffer)
 {
 	ssize_t	length;
-	char *temp1 = temp;
+	char *temp1;
 	
-	while (!(ft_strrchr(temp, '\n')))
+	while (!(ft_strrchr(temp, '\n')) || length <= 0)
 	{
 		length = read(fd, buffer, BUFFER_SIZE);
 		if (length == 0)
-			return (ft_strdup(""));
+			return (NULL);
 		if (length == -1)
 			return (NULL);		//! Null terminate
 		buffer[length] = '\0';
-		temp = ft_strjoin(temp1, buffer);
+		temp1 = temp;
+		temp = ft_strjoin(temp, buffer);
+		free(temp1);
 		if (!temp)
 		{
 			free(buffer);
@@ -122,14 +124,23 @@ char	*get_next_line(int fd)
 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
 	if (!buffer)
 	{
-		free(buffer);
+		free(temp[fd]);
 		return (NULL);
 	}
 	temp[fd] = read_line(fd, temp[fd], buffer);
+	if (temp[fd] == NULL)
+	{
+		free(temp[fd]);
+		free(buffer);
+		return (NULL);
+	}
 	line = get_line(&temp[fd]);
 	if (!line)
+	{
+		free(temp[fd]);
+		free(buffer);
 		return (NULL);
-	free(buffer);
+	}
 	return (line);
 }
 
@@ -160,18 +171,18 @@ char	*get_next_line(int fd)
 // }
 
 // ------- test: get_next_line function -----------
-int main(void)
-{
-	int fd;
-	char *line;
-	char *line_2;
-
-	line = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
-	line_2 = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+// int main(void)
+// {
+// 	int fd;
+// 	char	*line;
 	
-	fd = open("test.txt", O_RDONLY);
-	line = get_next_line(fd);
-	printf("test main: %s", line);
-	line_2 = get_next_line(fd);
-	printf("test main2: %s", line_2);	
-}
+// 	fd = open("test_none.txt", O_RDONLY);
+	
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("test: %s\n", line);
+// 		free(line);
+// 	}	
+// 	close(fd);
+// 	return (0);
+// }
