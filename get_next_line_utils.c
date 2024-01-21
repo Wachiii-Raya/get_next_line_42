@@ -5,35 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/22 22:18:58 by wchumane          #+#    #+#             */
-/*   Updated: 2023/12/26 15:52:42 by wchumane         ###   ########.fr       */
+/*   Created: 2024/01/21 15:32:06 by wchumane          #+#    #+#             */
+/*   Updated: 2024/01/21 15:33:29 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*ptr;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	j = 0;
-	if (!s1 || !s2)
-		return (ft_strdup(""));
-	ptr = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-
-	if (!ptr)
-		return (NULL);
-	while (s1[i])
-		ptr[j++] = s1[i++];
-	i = 0;
-	while (s2[i])
-		ptr[j++] = s2[i++];
-	ptr[j] = '\0';
-	return (ptr);
-}
+# include "get_next_line.h"
 
 size_t	ft_strlen(const char *str)
 {
@@ -72,9 +49,50 @@ char	*ft_strdup(const char *s1)
 	size_t	len;
 
 	len = ft_strlen(s1) + 1;
-	ptr = (char *)malloc(len);
+	ptr = malloc(len);
 	if (!ptr)
 		return (NULL);
 	ft_strlcpy(ptr, s1, len);
+	return (ptr);
+}
+
+char	*ft_strrchr(const char *s, int c)
+{
+	int				i;
+	unsigned char	d;
+
+	d = c;
+	i = ft_strlen(s);
+	if (d == '\0')
+	{
+		return ((char *)s + (i));
+	}
+	while (i >= 0)
+	{
+		if (s[i] == d)
+			return ((char *)s + i);
+		i--;
+	}
+	return (NULL);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*ptr;
+	size_t	i;
+
+	i = 0;
+	if (!s)
+		return (NULL);
+	if (ft_strlen(s) < start)
+		return (ft_strdup(""));
+	if (ft_strlen(s) - start < len)
+		len = ft_strlen(s) - start;
+	ptr = malloc(len + 1);
+	if (!ptr)
+		return (NULL);
+	while (i < len && s[start])
+		ptr[i++] = s[start++];
+	ptr[i] = '\0';
 	return (ptr);
 }

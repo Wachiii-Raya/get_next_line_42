@@ -5,315 +5,173 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/26 15:27:09 by wchumane          #+#    #+#             */
-/*   Updated: 2023/12/26 16:43:04 by wchumane         ###   ########.fr       */
+/*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
+/*   Updated: 2024/01/21 20:21:36 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+# include "get_next_line.h"
 
-// char	*ft_strjoin(char const *s1, char const *s2)
-// {
-// 	char	*ptr;
-// 	size_t	i;
-// 	size_t	j;
+char	*ft_strjoin(char const *s1, char const *s2)
 
-// 	i = 0;
-// 	j = 0;
-// 	if (!s1 || !s2)
-// 		return (ft_strdup(""));
-// 	ptr = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-
-// 	if (!ptr)
-// 		return (NULL);
-// 	while (s1[i])
-// 		ptr[j++] = s1[i++];
-// 	i = 0;
-// 	while (s2[i])
-// 		ptr[j++] = s2[i++];
-// 	ptr[j] = '\0';
-// 	return (ptr);
-// }
-
-size_t	ft_strlen(const char *str)
-{
-	int	counter;
-
-	counter = 0;
-	while (str[counter] != '\0')
-	{
-		counter++;
-	}
-	return (counter);
-}
-
-size_t	ft_strlcpy(char *dst, const char *src, size_t size)
-{
-	size_t	i;
-
-	i = 0;
-	if (size > 0)
-	{
-		while (src[i] && i < (size - 1))
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		dst[i] = 0;
-	}
-	while (src[i])
-		i++;
-	return (i);
-}
-
-char	*ft_strdup(const char *s1)
 {
 	char	*ptr;
-	size_t	len;
+	size_t	i;
+	size_t	j;
 
-	len = ft_strlen(s1) + 1;
-	ptr = (char *)malloc(len);
+	i = 0;
+	j = 0;
+	if (!s1 || !s2)			//! recheck this condition
+		return (ft_strdup(""));
+	ptr = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!ptr)
 		return (NULL);
-	ft_strlcpy(ptr, s1, len);
+	while (s1[i])
+		ptr[j++] = s1[i++];
+	i = 0;
+	while (s2[i])
+		ptr[j++] = s2[i++];
+	ptr[j] = '\0';
 	return (ptr);
 }
 
-//-----------------------------------------
-
-int	is_newline_found(char *buffer)
-{
-	int	is_newline;
-	int	i;
-
-	is_newline = 0;
-	i = 0;
-	while (buffer[i] == '\0')
-	{
-		if (buffer[i] == '\n')
-		{
-			// delete char after '\n'
-			buffer[i] = '\0';
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-void	*free_all_node(t_list **node)
-{
-	t_list	*tmp;
-
-	while (*node != NULL)
-	{
-		tmp = *node;
-		*node = (*node)->next;
-		free(tmp->str);
-		free(tmp);
-	}
-	return (NULL);
-}
-
-// convert linked list of 1 lines to a line for return
-char	*convert_list_to_line(t_list *node)
+/* 
+	get_line: After append the read line based on BUFFER_SIZE to *temp[4096]
+			 extract 1 line from 2 dimensional array, temp
+	argument: *temp, *ptr_nl (which is the pointer point to '\n', output form read_line func.)
+			 , char *line (for return as an output)
+	output: extracted line
+*/
+char	*get_line(char **temp55)
 {
 	char	*line;
-	int		length;
-	t_list	*head;
+	size_t	length;
+	char	*temp1;
 	
-	if (node == NULL)
-		return (NULL);
 	length = 0;
-	head = node;
-	while (node != NULL)
-	{
-		length += ft_strlen(node->str);
-		node = node->next;
-	}
-	// line = (char *)malloc(sizeof(char) * (length + 1));
-	// if (!line)
-	// 	return (NULL);
-	// while (head != NULL)
-	// {
-	// 	line = ft_strjoin(line, head->str);
-	// 	head = head->next;
-	// }
-	// return (line);
-	//convert linked list to char *line aka a single line
-	line = (char *)malloc(sizeof(char) * (length + 1));
+	while ((*temp55)[length] != '\n')
+		length++;
+	line = malloc(sizeof(char *) * (length + 1));
 	if (!line)
 		return (NULL);
-	while (head != NULL)
+	line = ft_substr(*temp55, 0, length+1);
+	if (!line)
 	{
-		ft_strlcpy(line, head->str, length + 1);
-		head = head->next;
+		free(line);
+		return (NULL);		//! Null terminate
 	}
+	// TODO: 
+	temp1 = *temp55;
+	*temp55 = *temp55 + length;
+	**temp55 = '\0';
+	(*temp55)++;
+	free(temp1);
 	return (line);
 }
 
-void	append_buffer_to_node(t_list **str, char *buffer)
+/*
+	read_line: After checking does '\n' exist, and '\n' doese't exist. Then, call 
+			  this function to loop read(),append read buffer to temp, and check any
+			  '\n' are included in temp, if found, stop loop and pass the temp to 
+			  get_line function
+	argument: fd, temp[fd], buffer
+	output: ptr_nl
+*/
+char	*read_line(int fd, char *temp, char *buffer)
 {
-	t_list	*new_node;
-	t_list	*previous_node;
-
-	new_node = (t_list *)malloc(sizeof(t_list));
-	if (!new_node)
-		return ;
-	new_node->str = ft_strdup(buffer);
-	new_node->next = NULL;
-	previous_node = *str;
-	if (*str == NULL)
+	ssize_t	length;
+	char *temp1 = temp;
+	
+	while (!(ft_strrchr(temp, '\n')))
 	{
-		*str = new_node;
-		return ;
+		length = read(fd, buffer, BUFFER_SIZE);
+		if (length == 0)
+			return (ft_strdup(""));
+		if (length == -1)
+			return (NULL);		//! Null terminate
+		buffer[length] = '\0';
+		temp = ft_strjoin(temp1, buffer);
+		if (!temp)
+		{
+			free(buffer);
+			return (NULL);
+		}
 	}
-	else
-	{
-		while (!(previous_node->next))
-			previous_node = previous_node->next;
-		previous_node->next = new_node;
-	}
+	free(buffer);
+	return (temp);
 }
 
-// void	*read_buffer(char *temp, int fd)
-// {
-// 	int		read_length;
-
-// 	read_length = read(fd, temp, BUFFER_SIZE);
-// 	if (read_length == 0)
-// 		return NULL;
-// 	*temp = *temp + '\0';
-// 	return (temp);
-// }
-
-char	*read_buffer(int fd)
-{
-    char	*temp = malloc(BUFFER_SIZE + 1); // Allocate memory for the buffer
-    int		read_length;
-
-    if (temp == NULL) {
-        return NULL; // Return NULL if memory allocation failed
-    }
-
-    read_length = read(fd, temp, BUFFER_SIZE);
-    if (read_length <= 0) {
-        free(temp); // Free the buffer if read failed or reached end of file
-        return NULL;
-    }
-
-    temp[read_length] = '\0'; // Properly null-terminate the buffer
-    return temp;
-}
-
+/*
+	get_next_line: check static *temp[FD_MAX] first, if '\n' is found
+				   call get_line function, if not -> call read line
+	argument: fd
+	output: 1 line
+*/
 char	*get_next_line(int fd)
 {
-	// step 1: define static val
-	static t_list	*str_node[4095];
+	static	char	*temp[4096];		//TODO: change to FD_MAX
+	char			*buffer;
 	char			*line;
-	int				is_newline_flag;
-	char			*temp;
-
-	is_newline_flag = 0;
-	// step 2: condition checking -> fd, buf_size, returned value of read() for just 1st byte
-	// TODO: check that fd must be greater that 0 or 2
-	if (fd < 0 && BUFFER_SIZE <= 0)
-		return (0);
-	if (read(fd, NULL, 0 ))
-		return (0);
-	// step 3: create node of read string until '\n' is found
-	while (is_newline_flag != 1)
-	{	
-		// *read_buff = read_buffer
-		temp = (char *)malloc(BUFFER_SIZE + 1);
-		// read_buffer(temp, fd);
-		temp = read_buffer(fd);
-		is_newline_flag = is_newline_found(temp);
-		append_buffer_to_node(str_node, temp);
+	
+	// step 1: check temp, if temp == null -> temp = strdup("")
+	if (!temp[fd])  //? 
+		temp[fd] = ft_strdup("");
+	// step 2: check '\n' in temp
+	if ((ft_strrchr(temp[fd], '\n')))
+		return (get_line(&temp[fd]));
+	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+	if (!buffer)
+	{
+		free(buffer);
+		return (NULL);
 	}
-	// step 4: convert linked list of 1 lines to a line for return
-	line = convert_list_to_line(*str_node);
-	// step 5: free all node
-	free_all_node(str_node);	
+	temp[fd] = read_line(fd, temp[fd], buffer);
+	line = get_line(&temp[fd]);
+	if (!line)
+		return (NULL);
+	free(buffer);
 	return (line);
 }
 
-// // ------- test: get_next_line function [/]---------
+// ---------- test: get_line function --------------
+// int	main(void)
+// {	
+// 	char	temp[20] = "abcd\nfg";
+// 	char	*ptr_nl;
+// 	char	*line;
+
+// 	ptr_nl = ft_strrchr(temp, '\n');
+
+// 	line = get_line(temp, ptr_nl);
+// 	printf("test of get_line, extracted line: %s", line);
+// }
+
+// -------- test: read_line function ---------------
 // int	main(void)
 // {
 // 	int		fd;
-// 	char	*str;
-
+// 	char	*ptr_nl;
+// 	char	temp[20] = "abcdfg";
+// 	char	*buffer;
+	
 // 	fd = open("test.txt", O_RDONLY);
-// 	str = get_next_line(fd);
-// 	printf("str: %s\n", str);
+// 	ptr_nl = read_line(fd, temp, buffer);
+// 	printf("test of read_line, return pointer to new_line as result: %s", ptr_nl);
 // }
 
-// ------- test: convert linked list to char *line aka a single line [/]---------
-// int	main(void)
-// {
-// 	t_node	*node_1;
-// 	t_node	*node_2;
-// 	t_node	*node_3;
-// 	char	*a_line;
-
-// 	node_1 = (t_node *)malloc(sizeof(t_node));
-// 	node_2 = (t_node *)malloc(sizeof(t_node));
-// 	node_3 = (t_node *)malloc(sizeof(t_node));
-// 	node_1->str = ft_strdup("hey");
-// 	node_2->str = ft_strdup("gurl");
-// 	node_3->str = ft_strdup("whatsup");
-// 	node_1->next = node_2;
-// 	node_2->next = node_3;
-// 	node_3->next = NULL;
-
-// 	a_line = convert_list_to_line(node_1);
-// 	printf("line: %s\n", a_line);
-// }
-
-// ------- test: append buffer to node function [/]---------
-
-// void print_list(t_node *node)
-// {
-//     while (node != NULL)
-//     {
-//         printf("%s\n", node->str);
-//         node = node->next;
-// 		printf("eiei\n");
-//     }
-// }
-
-// int	main(void)
-// {
-// 	int	fd;
-// 	t_node	*str[255];		// FD max <- fd of this pc
-	
-	
-// fd = open("test.txt", O_RDONLY);
-// 	append_buffer_to_node(str, "hey gurlll");
-// 	t_node	*tmp = *str;
-// 	print_list(tmp);
-	
-// }
-int	main(void)
+// ------- test: get_next_line function -----------
+int main(void)
 {
-    int	fd;
-	char	*line;
+	int fd;
+	char *line;
+	char *line_2;
 
-    fd = open("test.txt", O_RDONLY);
-	line = malloc(sizeof(char) * 100);
+	line = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+	line_2 = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+	
+	fd = open("test.txt", O_RDONLY);
 	line = get_next_line(fd);
-	printf("line: %s\n", line);
+	printf("test main: %s", line);
+	line_2 = get_next_line(fd);
+	printf("test main2: %s", line_2);	
 }
-
-// ------- test: read_buffer function ---------
-// int main(void)
-// {
-// 	int		fd;
-// 	char	*temp;
-
-// 	fd = open("test.txt", O_RDONLY);
-// 	temp = (char *)malloc(BUFFER_SIZE + 1);
-// 	temp = read_buffer(fd);
-// 	printf("temp: %s\n", temp);
-// }
