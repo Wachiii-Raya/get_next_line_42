@@ -35,39 +35,25 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (ptr);
 }
 
-/* 
-	get_line: After append the read line based on BUFFER_SIZE to *temp[4096]
-			 extract 1 line from 2 dimensional array, temp
-	argument: *temp, *ptr_nl (which is the pointer point to '\n', output form read_line func.)
-			 , char *line (for return as an output)
-	output: extracted line
+/*
+	clear_arr:  clear the result out of static str_arr and return
+			    the current str_arr
+	arguments: str_arr, length_nl
+	output: 	current str_arr
 */
-char	*get_line(char **temp55)
-{
-	char	*line;
-	size_t	length;
-	char	*temp1;
-	
-	length = 0;
-	while ((*temp55)[length] != '\n')
-		length++;
-	line = malloc(sizeof(char *) * (length + 1));
-	if (!line)
-		return (NULL);
-	line = ft_substr(*temp55, 0, length+1);
-	if (!line)
-	{
-		free(line);
-		return (NULL);		//! Null terminate
-	}
-	// TODO: 
-	temp1 = *temp55;
-	*temp55 = *temp55 + length;
-	**temp55 = '\0';
-	(*temp55)++;
-	// free(temp1);
-	return (line);
-}
+
+// char	*clear_arr(char *str, size_t length)
+// {
+// 	char	*ptr;
+// 	char	current_arr;
+// 	size_t	i;
+
+// 	current_arr = malloc(sizeof(char *) * ())
+// 	while (i <= length)
+// 	{
+
+// 	}
+// }
 
 /*
 	read_line: After checking does '\n' exist, and '\n' doese't exist. Then, call 
@@ -77,30 +63,24 @@ char	*get_line(char **temp55)
 	argument: fd, temp[fd], buffer
 	output: ptr_nl
 */
-char	*read_line(int fd, char *temp, char *buffer)
+char	*read_line(int fd, char *str_array, char *buffer)
 {
 	ssize_t	length;
-	char *temp1;
-	
-	while (!(ft_strrchr(temp, '\n')) || length <= 0)
+
+	length = 1;
+	while((!(ft_strrchr(str_array, '\n'))) && (length > 0))
 	{
 		length = read(fd, buffer, BUFFER_SIZE);
-		if (length == 0)
-			return (NULL);
 		if (length == -1)
-			return (NULL);		//! Null terminate
-		buffer[length] = '\0';
-		temp1 = temp;
-		temp = ft_strjoin(temp, buffer);
-		free(temp1);
-		if (!temp)
 		{
 			free(buffer);
 			return (NULL);
 		}
+		buffer[length] = '\0';
+		str_array = ft_strjoin(str_array, buffer);
 	}
 	free(buffer);
-	return (temp);
+	return (str_array);
 }
 
 /*
@@ -111,51 +91,63 @@ char	*read_line(int fd, char *temp, char *buffer)
 */
 char	*get_next_line(int fd)
 {
-	static	char	*temp[4096];		//TODO: change to FD_MAX
-	char			*buffer;
-	char			*line;
-	
-	// step 1: check temp, if temp == null -> temp = strdup("")
-	if (!temp[fd])  //? 
-		temp[fd] = ft_strdup("");
-	// step 2: check '\n' in temp
-	if ((ft_strrchr(temp[fd], '\n')))
-		return (get_line(&temp[fd]));
+	char	*str_arr[4096];
+	char	*result;
+	char	*buffer;
+	size_t	length_nl;
+
+	length_nl = 0;
+	// step 1: check basic condition
+	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
+		return (NULL);
+	// step 2: check empty str_arry[fd]
+	if (!(str_arr[fd]))
+		str_arr[fd] = ft_strdup("");
+	// step 3: while loop read buffer until found '\n' or end file
 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
 	if (!buffer)
+		return (NULL);
+	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
+	// step 4: copy until found '/n'
+	if (ft_strlen(str_arr[fd]) > 0)
 	{
-		free(temp[fd]);
+		while (str_arr[fd][length_nl] != '\n')
+			length_nl++;
+		result = malloc(sizeof(char *) * (length_nl + 1));
+		if (!result)
+		{
+			free(buffer);
+			return (NULL);
+		}
+		ft_strlcpy(result, str_arr[fd], length_nl + 1);
+		return (result);
+	}
+	else
+	{
+		free(str_arr[fd]);
 		return (NULL);
 	}
-	temp[fd] = read_line(fd, temp[fd], buffer);
-	if (temp[fd] == NULL)
-	{
-		free(temp[fd]);
-		free(buffer);
-		return (NULL);
-	}
-	line = get_line(&temp[fd]);
-	if (!line)
-	{
-		free(temp[fd]);
-		free(buffer);
-		return (NULL);
-	}
-	return (line);
 }
 
-// ---------- test: get_line function --------------
-// int	main(void)
-// {	
-// 	char	temp[20] = "abcd\nfg";
-// 	char	*ptr_nl;
-// 	char	*line;
+// ------- test: get_next_line function -----------
+int main(void)
+{
+	int fd;
+	char	*line;
+	
+	fd = open("temp.txt", O_RDONLY);
+	
+	// while ((line = get_next_line(fd)) != NULL)
+	// {
+	// 	printf("test: %s\n", line);
+	// 	free(line);
+	// }	
+	line = get_next_line(fd);
+	printf("test: %s\n", line);
 
-// 	ptr_nl = ft_strrchr(temp, '\n');
-
-// 	line = get_line(temp, ptr_nl);
-// 	printf("test of get_line, extracted line: %s", line);
-// }
+	close(fd);
+	return (0);
+}
 
 // -------- test: read_line function ---------------
 // int	main(void)
@@ -166,23 +158,7 @@ char	*get_next_line(int fd)
 // 	char	*buffer;
 	
 // 	fd = open("test.txt", O_RDONLY);
+//     buffer = malloc(0);
 // 	ptr_nl = read_line(fd, temp, buffer);
 // 	printf("test of read_line, return pointer to new_line as result: %s", ptr_nl);
-// }
-
-// ------- test: get_next_line function -----------
-// int main(void)
-// {
-// 	int fd;
-// 	char	*line;
-	
-// 	fd = open("test_none.txt", O_RDONLY);
-	
-// 	while ((line = get_next_line(fd)) != NULL)
-// 	{
-// 		printf("test: %s\n", line);
-// 		free(line);
-// 	}	
-// 	close(fd);
-// 	return (0);
 // }
