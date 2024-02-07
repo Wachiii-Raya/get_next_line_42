@@ -24,15 +24,14 @@
 #include <unistd.h>
 
 
-size_t	ft_strlen(const char *str);
-size_t	ft_strlcpy(char *dst, const char *src, size_t size);
-char	*ft_strdup(const char *s1);
-char	*ft_strrchr(const char *s, int c);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
-char	*ft_strjoin(char const *s1, char const *s2);
-char	*get_line(char **temp);
-char	*read_line(int fd, char *temp, char *buffer);
-char	*get_next_line(int fd);
-
+size_t		ft_strlen(const char *str);
+size_t		ft_strlcpy(char *dst, const char *src, size_t size);
+char		*ft_strdup(const char *s1);
+char		*ft_strrchr(const char *s, int c);
+char		*ft_strjoin(char const *s1, char const *s2);
+char		*ft_substr(char const *s, unsigned int start, size_t len);
+char	*clear_array(char *str, size_t length);
+char		*read_line(int fd, char *str_array, char *buffer);
+char		*get_next_line(int fd);
 
 # endif

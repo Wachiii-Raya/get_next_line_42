@@ -13,7 +13,6 @@
 # include "get_next_line.h"
 
 char	*ft_strjoin(char const *s1, char const *s2)
-
 {
 	char	*ptr;
 	size_t	i;
@@ -41,19 +40,31 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	arguments: str_arr, length_nl
 	output: 	current str_arr
 */
+char	*clear_array(char *str, size_t length)
+{
+	char	*ptr;
+	char	*current_arr;
+	size_t	length_new;
+	size_t	length_max;
+	size_t	i;
 
-// char	*clear_arr(char *str, size_t length)
-// {
-// 	char	*ptr;
-// 	char	current_arr;
-// 	size_t	i;
-
-// 	current_arr = malloc(sizeof(char *) * ())
-// 	while (i <= length)
-// 	{
-
-// 	}
-// }
+	ptr = str;
+	i = 0;
+	length_max = ft_strlen(str);
+	length_new = length_max - length;
+	current_arr = malloc(sizeof(char *) * (length_new + 1));
+	if (!current_arr)
+	{
+		free(str);
+		return (NULL);
+	}
+	while (i < length_new)
+	{
+		current_arr[i] = ptr[length + i + 1];
+		i++;
+	}
+	return (current_arr);
+}
 
 /*
 	read_line: After checking does '\n' exist, and '\n' doese't exist. Then, call 
@@ -91,7 +102,7 @@ char	*read_line(int fd, char *str_array, char *buffer)
 */
 char	*get_next_line(int fd)
 {
-	char	*str_arr[4096];
+	static char	*str_arr[4096];
 	char	*result;
 	char	*buffer;
 	size_t	length_nl;
@@ -111,43 +122,45 @@ char	*get_next_line(int fd)
 	// step 4: copy until found '/n'
 	if (ft_strlen(str_arr[fd]) > 0)
 	{
-		while (str_arr[fd][length_nl] != '\n')
+		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
 			length_nl++;
-		result = malloc(sizeof(char *) * (length_nl + 1));
+		result = malloc(sizeof(char *) * (length_nl + 2));
 		if (!result)
 		{
 			free(buffer);
 			return (NULL);
 		}
-		ft_strlcpy(result, str_arr[fd], length_nl + 1);
-		return (result);
 	}
 	else
 	{
 		free(str_arr[fd]);
 		return (NULL);
 	}
+	ft_strlcpy(result, str_arr[fd], length_nl + 2);
+	result[length_nl + 2] = '\0';
+	str_arr[fd] = clear_array(str_arr[fd], length_nl);
+	return (result);
 }
 
-// ------- test: get_next_line function -----------
-int main(void)
-{
-	int fd;
-	char	*line;
+// ------------ test: get_next_line function -----------
+// int main(void)
+// {
+// 	int fd;
+// 	char	*line;
 	
-	fd = open("temp.txt", O_RDONLY);
+// 	fd = open("temp.txt", O_RDONLY);
 	
-	// while ((line = get_next_line(fd)) != NULL)
-	// {
-	// 	printf("test: %s\n", line);
-	// 	free(line);
-	// }	
-	line = get_next_line(fd);
-	printf("test: %s\n", line);
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("test: %s\n", line);
+// 		free(line);
+// 	}	
+// 	// line = get_next_line(fd);
+// 	// printf("test: %s\n", line);
 
-	close(fd);
-	return (0);
-}
+// 	close(fd);
+// 	return (0);
+// }
 
 // -------- test: read_line function ---------------
 // int	main(void)
@@ -161,4 +174,17 @@ int main(void)
 //     buffer = malloc(0);
 // 	ptr_nl = read_line(fd, temp, buffer);
 // 	printf("test of read_line, return pointer to new_line as result: %s", ptr_nl);
+// }
+
+// -------- test: clear_arr function ---------------
+// int	main(void)
+// {
+// 	char	*str_arr = "hello\nsleepy ooo";
+// 	int		length_nl;
+// 	char 	*result;
+
+// 	length_nl = 0;
+// 	while (str_arr[length_nl] != '\n')
+// 			length_nl++;
+// 	str_arr = clear_arr(str_arr, length_nl);
 // }
