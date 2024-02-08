@@ -12,7 +12,7 @@
 
 # include "get_next_line.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	char	*ptr;
 	size_t	i;
@@ -24,15 +24,20 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (ft_strdup(""));
 	ptr = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!ptr)
+	{
+		free(s1);
 		return (NULL);
+	}
 	while (s1[i])
 		ptr[j++] = s1[i++];
 	i = 0;
 	while (s2[i])
 		ptr[j++] = s2[i++];
 	ptr[j] = '\0';
+	free(s1);
 	return (ptr);
 }
+
 
 /*
 	clear_arr:  clear the result out of static str_arr and return
@@ -42,13 +47,13 @@ char	*ft_strjoin(char const *s1, char const *s2)
 */
 char	*clear_array(char *str, size_t length)
 {
-	char	*ptr;
+	// char	*ptr;
 	char	*current_arr;
 	size_t	length_new;
 	size_t	length_max;
 	size_t	i;
 
-	ptr = str;
+	// ptr = str;
 	i = 0;
 	length_max = ft_strlen(str);
 	length_new = length_max - length;
@@ -60,9 +65,11 @@ char	*clear_array(char *str, size_t length)
 	}
 	while (i < length_new)
 	{
-		current_arr[i] = ptr[length + i + 1];
+		current_arr[i] = str[length + i + 1];
 		i++;
 	}
+	current_arr[i] = '\0';
+	free(str);
 	return (current_arr);
 }
 
@@ -78,6 +85,8 @@ char	*read_line(int fd, char *str_array, char *buffer)
 {
 	ssize_t	length;
 
+	// if (!(str_array))
+	// 	str_array = ft_strdup("");
 	length = 1;
 	while((!(ft_strrchr(str_array, '\n'))) && (length > 0))
 	{
@@ -89,6 +98,11 @@ char	*read_line(int fd, char *str_array, char *buffer)
 		}
 		buffer[length] = '\0';
 		str_array = ft_strjoin(str_array, buffer);
+		if (!str_array)
+		{
+			free(buffer);
+			return (NULL);
+		}
 	}
 	free(buffer);
 	return (str_array);
@@ -127,7 +141,7 @@ char	*get_next_line(int fd)
 		result = malloc(sizeof(char *) * (length_nl + 2));
 		if (!result)
 		{
-			free(buffer);
+			free(str_arr[fd]);
 			return (NULL);
 		}
 	}
@@ -145,19 +159,16 @@ char	*get_next_line(int fd)
 // ------------ test: get_next_line function -----------
 // int main(void)
 // {
-// 	int fd;
+// 	int 	fd;
 // 	char	*line;
 	
 // 	fd = open("temp.txt", O_RDONLY);
 	
 // 	while ((line = get_next_line(fd)) != NULL)
 // 	{
-// 		printf("test: %s\n", line);
+// 		printf("test_none: %s\n", line);
 // 		free(line);
 // 	}	
-// 	// line = get_next_line(fd);
-// 	// printf("test: %s\n", line);
-
 // 	close(fd);
 // 	return (0);
 // }
