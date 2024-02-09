@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/21 15:32:06 by wchumane          #+#    #+#             */
-/*   Updated: 2024/01/21 20:49:16 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/09 18:05:02 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	*ft_strdup(const char *s1)
 	size_t	len;
 
 	len = ft_strlen(s1) + 1;
-	ptr = malloc(len);
+	ptr = malloc(sizeof(char *) * len);
 	if (!ptr)
 		return (NULL);
 	ft_strlcpy(ptr, s1, len);
@@ -88,7 +88,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (ft_strdup(""));
 	if (ft_strlen(s) - start < len)
 		len = ft_strlen(s) - start;
-	ptr = malloc(len + 1);
+	ptr = malloc(sizeof(char *) * (len + 1));
 	if (!ptr)
 		return (NULL);
 	while (i < len && s[start])
