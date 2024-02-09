@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/01/21 21:58:37 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/09 18:14:19 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,12 +142,14 @@ char	*get_next_line(int fd)
 		if (!result)
 		{
 			free(str_arr[fd]);
+			str_arr[fd] = NULL;
 			return (NULL);
 		}
 	}
 	else
 	{
 		free(str_arr[fd]);
+		str_arr[fd] = NULL;
 		return (NULL);
 	}
 	ft_strlcpy(result, str_arr[fd], length_nl + 2);
