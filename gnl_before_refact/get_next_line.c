@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/09 22:40:14 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/09 22:54:14 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ char	*read_line(int fd, char *str_array, char *buffer)
 	return (str_array);
 }
 
-static void init_gnl()
+// static void init_gnl()
 
 /*
 	get_next_line: check static *temp[FD_MAX] first, if '\n' is found
