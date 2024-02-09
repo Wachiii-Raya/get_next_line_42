@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/01/21 21:58:37 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/09 22:40:14 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,8 @@ char	*read_line(int fd, char *str_array, char *buffer)
 	return (str_array);
 }
 
+static void init_gnl()
+
 /*
 	get_next_line: check static *temp[FD_MAX] first, if '\n' is found
 				   call get_line function, if not -> call read line
@@ -122,18 +124,14 @@ char	*get_next_line(int fd)
 	size_t	length_nl;
 
 	length_nl = 0;
-	// step 1: check basic condition
 	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
 		return (NULL);
-	// step 2: check empty str_arry[fd]
 	if (!(str_arr[fd]))
 		str_arr[fd] = ft_strdup("");
-	// step 3: while loop read buffer until found '\n' or end file
 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
 	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
-	// step 4: copy until found '/n'
 	if (ft_strlen(str_arr[fd]) > 0)
 	{
 		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
