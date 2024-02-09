@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/09 18:14:19 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/09 18:21:04 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,15 @@ char	*get_next_line(int fd)
 	length_nl = 0;
 	// step 1: check basic condition
 	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
+	{
+		if (str_arr[fd])
+		{
+			free(str_arr[fd]);
+			str_arr[fd] = NULL;
+			return (NULL);
+		}
 		return (NULL);
+	}
 	// step 2: check empty str_arry[fd]
 	if (!(str_arr[fd]))
 		str_arr[fd] = ft_strdup("");
