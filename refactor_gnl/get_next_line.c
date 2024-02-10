@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/10 22:15:05 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/10 22:54:39 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,9 +113,13 @@ char *clone_case(int case_num, char **str_arr, int fd)
 {
 	if(case_num == 1)
 	{
-		printf("clone case func free, str_arr[fd]: %p\n", str_arr[fd]);
-		free(str_arr[fd]);
-		str_arr[fd] = NULL;
+		if (!str_arr[fd])
+			return (NULL);
+		else
+		{
+			free(str_arr[fd]);
+			str_arr[fd] = NULL;
+		}
 	}
 	return (NULL);
 }
@@ -132,9 +136,7 @@ char	*get_next_line(int fd)
 	if (!buffer)						//edit 4				//edit 4
 		return (NULL);								//edit 4
 	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
-	if (!str_arr[fd])						//edit 5
-		return (NULL);						//edit 5
-	if (ft_strlen(str_arr[fd]) > 0)
+	if (str_arr[fd] && ft_strlen(str_arr[fd]) > 0 )
 	{
 		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
 			length_nl++;
