@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 23:07:02 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/10 00:46:57 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/10 17:15:06 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,23 +76,28 @@ char	*ft_strrchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	char	*ptr;
 	size_t	i;
+	size_t	j;
 
 	i = 0;
-	if (!s)
-		return (NULL);
-	if (ft_strlen(s) < start)
+	j = 0;
+	if (!s1 || !s2)			//! recheck this condition
 		return (ft_strdup(""));
-	if (ft_strlen(s) - start < len)
-		len = ft_strlen(s) - start;
-	ptr = malloc(len + 1);
+	ptr = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!ptr)
+	{
+		free(s1);
 		return (NULL);
-	while (i < len && s[start])
-		ptr[i++] = s[start++];
-	ptr[i] = '\0';
+	}
+	while (s1[i])
+		ptr[j++] = s1[i++];
+	i = 0;
+	while (s2[i])
+		ptr[j++] = s2[i++];
+	ptr[j] = '\0';
+	free(s1);
 	return (ptr);
 }

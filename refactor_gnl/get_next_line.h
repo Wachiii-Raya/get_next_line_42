@@ -6,7 +6,7 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/09 23:07:31 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/10 00:28:06 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/10 21:59:15 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,14 @@
 size_t		ft_strlen(const char *str);
 size_t		ft_strlcpy(char *dst, const char *src, size_t size);
 char		*ft_strdup(const char *s1);
-char	*ft_strrchr(const char *s, int c);
-
+char		*ft_strrchr(const char *s, int c);
+char		*clone_case(int case_num,char **str_arr, int fd);
 char		*ft_strjoin(char *s1, char const *s2);
-char		*ft_substr(char const *s, unsigned int start, size_t len);
-char	    *clear_array(char *str, size_t length);
+char		*clear_array(char *str, size_t length);
 char		*read_line(int fd, char *str_array, char *buffer);
 char		*get_next_line(int fd);
+char		*gnl_init(char	**str_arr, int fd);
+
 
 
 # endif

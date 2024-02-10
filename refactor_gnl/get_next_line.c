@@ -6,39 +6,12 @@
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/20 22:35:59 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/10 02:16:55 by wchumane         ###   ########.fr       */
+/*   Updated: 2024/02/10 22:15:05 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "get_next_line.h"
 #include <stdio.h> //remove this before submit
-
-char	*ft_strjoin(char *s1, char const *s2)
-{
-	char	*ptr;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	j = 0;
-	if (!s1 || !s2)			//! recheck this condition
-		return (ft_strdup(""));
-	ptr = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!ptr)
-	{
-		free(s1);
-		return (NULL);
-	}
-	while (s1[i])
-		ptr[j++] = s1[i++];
-	i = 0;
-	while (s2[i])
-		ptr[j++] = s2[i++];
-	ptr[j] = '\0';
-	free(s1);
-	return (ptr);
-}
-
 
 /*
 	clear_arr:  clear the result out of static str_arr and return
@@ -86,8 +59,6 @@ char	*read_line(int fd, char *str_array, char *buffer)
 {
 	ssize_t	length;
 
-	// if (!(str_array))
-	// 	str_array = ft_strdup("");
 	length = 1;
 	while((!(ft_strrchr(str_array, '\n'))) && (length > 0))
 	{
@@ -109,49 +80,10 @@ char	*read_line(int fd, char *str_array, char *buffer)
 	return (str_array);
 }
 
-char	*get_line_handler(char *str_arr)
+char	*gnl_init(char	**str_arr, int fd)
 {
-	char	*result;
-	size_t	length_nl;
-
-	length_nl = 0;
-	if (ft_strlen(str_arr) > 0)
-	{
-		while ((str_arr[length_nl] != '\n') && (str_arr[length_nl] != '\0'))
-			length_nl++;
-		result = malloc(sizeof(char) * (length_nl + 1 + (str_arr[length_nl] == '\n'))); //edit 6 from "sizeof(char *)" to "sizeof (char)"
-		if (!result)
-		{
-			free(str_arr);
-			str_arr = NULL;  //edit 1
-			return (NULL);
-		}
-	}
-	else
-	{
-		free(str_arr);
-		str_arr = NULL;  //edit 1
-		return (NULL);
-	}
-	ft_strlcpy(result, str_arr, length_nl + 1 + (str_arr[length_nl] == '\n'));
-	result[length_nl + (str_arr[length_nl] == '\n')] = '\0';			//edit 7 from "length_nl + 2" to "length_nl + 1"
-	// str_arr = clear_areray(str_arr, length_nl);
-	return (result);
-}
-
-/*
-	get_next_line: check static *temp[FD_MAX] first, if '\n' is found
-				   call get_line function, if not -> call read line
-	argument: fd
-	output: 1 line
-*/
-char	*get_next_line(int fd)
-{
-	static char	*str_arr[4096];
-	char	*result;
 	char	*buffer;
 
-	// step 1: check basic condition
 	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
 	{										//edit 2
 		if (str_arr[fd])					//edit 2
@@ -161,52 +93,120 @@ char	*get_next_line(int fd)
 		}									//edit 2
 		return (NULL);
 	}										//edit 2
-	// step 2: check empty str_arry[fd]
 	if (!(str_arr[fd]))
 	{										//edit 3
 		str_arr[fd] = ft_strdup("");
 		if (!str_arr[fd])					//edit 3
 			return (NULL);					//edit 3
 	}										//edit 3
-	// step 3: while loop read buffer until found '\n' or end file
 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
 	if (!buffer)
 	{										//edit 4
 		free(str_arr[fd]);					//edit 4
 		str_arr[fd] = NULL;					//edit 4
 		return (NULL);
-	}										//edit 4
+	}
+	return (buffer);	
+}
+
+char *clone_case(int case_num, char **str_arr, int fd)
+{
+	if(case_num == 1)
+	{
+		printf("clone case func free, str_arr[fd]: %p\n", str_arr[fd]);
+		free(str_arr[fd]);
+		str_arr[fd] = NULL;
+	}
+	return (NULL);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*str_arr[4096];
+	char	*result;
+	char	*buffer;
+	size_t	length_nl;
+
+	length_nl = 0;
+	buffer = gnl_init(str_arr, fd);
+	if (!buffer)						//edit 4				//edit 4
+		return (NULL);								//edit 4
 	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
 	if (!str_arr[fd])						//edit 5
 		return (NULL);						//edit 5
-	// step 4: copy until found '/n'
-	// if (ft_strlen(str_arr[fd]) > 0)
-	// {
-	// 	while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
-	// 		length_nl++;
-	// 	result = malloc(sizeof(char) * (length_nl + 1 + (str_arr[fd][length_nl] == '\n'))); //edit 6 from "sizeof(char *)" to "sizeof (char)"
-	// 	if (!result)
-	// 	{
-	// 		free(str_arr[fd]);
-	// 		str_arr[fd] = NULL; //edit 1
-	// 		return (NULL);
-	// 	}
-	// }
-	// else
-	// {
-	// 	free(str_arr[fd]);
-	// 	str_arr[fd] = NULL;  //edit 1
-	// 	return (NULL);
-	// }
-	// ft_strlcpy(result, str_arr[fd], length_nl + 1 + (str_arr[fd][length_nl] == '\n'));
-	// result[length_nl + (str_arr[fd][length_nl] == '\n')] = '\0';			//edit 7 from "length_nl + 2" to "length_nl + 1"
-	// str_arr[fd] = clear_array(str_arr[fd], length_nl);
-	result = get_line_handler(str_arr[fd]);
-	if (!result)
-		return (NULL);
-	str_arr[fd] = clear_array(str_arr[fd], ft_strlen(result));
+	if (ft_strlen(str_arr[fd]) > 0)
+	{
+		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
+			length_nl++;
+		result = malloc(sizeof(char) * (length_nl + 1 + (str_arr[fd][length_nl] == '\n'))); //edit 6 from "sizeof(char *)" to "sizeof (char)"
+		if (!result)
+			return (clone_case(1, str_arr, fd));
+	}
+	else
+		return (clone_case(1, str_arr, fd));
+	ft_strlcpy(result, str_arr[fd], length_nl + 1 + (str_arr[fd][length_nl] == '\n'));
+	result[length_nl + (str_arr[fd][length_nl] == '\n')] = '\0';			//edit 7 from "length_nl + 2" to "length_nl + 1"
+	str_arr[fd] = clear_array(str_arr[fd], length_nl);
 	return (result);
 }
+
+/*
+	get_next_line: check static *temp[FD_MAX] first, if '\n' is found
+				   call get_line function, if not -> call read line
+	argument: fd
+	output: 1 line
+*/
+
+//----------work well gnl------------------
+// char	*get_next_line(int fd)
+// {
+// 	static char	*str_arr[4096];
+// 	char	*result;
+// 	char	*buffer;
+// 	size_t	length_nl;
+
+// 	length_nl = 0;
+// 	printf("get_next_line func malloc, str_arr[fd]: %p\n", str_arr[fd]);
+// 	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
+// 	{										//edit 2
+// 		if (str_arr[fd])					//edit 2
+// 			return (clone_case(1, str_arr[fd]));					//edit 2
+// 		return (NULL);
+// 	}										//edit 2
+// 	if (!(str_arr[fd]))
+// 	{										//edit 3
+// 		str_arr[fd] = ft_strdup("");
+// 		if (!str_arr[fd])					//edit 3
+// 			return (NULL);					//edit 3
+// 	}										//edit 3
+// 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+// 	printf("get_next_line func mslloc, buffer: %p\n", buffer);
+// 	if (!buffer)
+// 		return (clone_case(1, str_arr[fd]));
+// 	if (!buffer)
+// 		return (NULL);
+// 	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
+// 	if (!str_arr[fd])						//edit 5
+// 		return (NULL);						//edit 5
+// 	if (ft_strlen(str_arr[fd]) > 0)
+// 	{
+// 		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
+// 			length_nl++;
+// 		result = malloc(sizeof(char) * (length_nl + 1 + (str_arr[fd][length_nl] == '\n'))); //edit 6 from "sizeof(char *)" to "sizeof (char)"
+// 		printf("get_next_line func malloc, result: %p\n", result);
+// 		if (!result)
+// 			return (clone_case(1, str_arr[fd]));
+// 	}
+// 	else
+// 		return (clone_case(1, str_arr[fd]));
+// 	ft_strlcpy(result, str_arr[fd], length_nl + 1 + (str_arr[fd][length_nl] == '\n'));
+// 	result[length_nl + (str_arr[fd][length_nl] == '\n')] = '\0';			//edit 7 from "length_nl + 2" to "length_nl + 1"
+// 	str_arr[fd] = clear_array(str_arr[fd], length_nl);
+// 	return (result);
+// }
+
+
+
 
 // ------------ test: get_next_line function -----------
 // int main(void)
@@ -214,7 +214,87 @@ char	*get_next_line(int fd)
 // 	int 	fd;
 // 	char	*line;
 	
-// 	fd = open("temp.txt", O_RDONLY);
+// 	fd = open("test_empty.txt", O_RDONLY);
+	
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("test_none: %s\n", line);
+// 		free(line);
+// 	}	
+// 	close(fd);
+// 	return (0);
+// }
+
+
+//----------work well gnl------------------
+// char	*get_next_line(int fd)
+// {
+// 	static char	*str_arr[4096];
+// 	char	*result;
+// 	char	*buffer;
+// 	size_t	length_nl;
+
+// 	length_nl = 0;
+// 	// step 1: check basic condition
+// 	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
+// 	{										//edit 2
+// 		if (str_arr[fd])					//edit 2
+// 		{									//edit 2
+// 			free(str_arr[fd]);				//edit 2
+// 			str_arr[fd] = NULL;				//edit 2
+// 		}									//edit 2
+// 		return (NULL);
+// 	}										//edit 2
+// 	// step 2: check empty str_arry[fd]
+// 	if (!(str_arr[fd]))
+// 	{										//edit 3
+// 		str_arr[fd] = ft_strdup("");
+// 		if (!str_arr[fd])					//edit 3
+// 			return (NULL);					//edit 3
+// 	}										//edit 3
+// 	// step 3: while loop read buffer until found '\n' or end file
+// 	buffer = malloc(sizeof(char *) * (BUFFER_SIZE + 1));
+// 	if (!buffer)
+// 	{										//edit 4
+// 		free(str_arr[fd]);					//edit 4
+// 		str_arr[fd] = NULL;					//edit 4
+// 		return (NULL);
+// 	}										//edit 4
+// 	str_arr[fd] = read_line(fd, str_arr[fd], buffer);
+// 	if (!str_arr[fd])						//edit 5
+// 		return (NULL);						//edit 5
+// 	// step 4: copy until found '/n'
+// 	if (ft_strlen(str_arr[fd]) > 0)
+// 	{
+// 		while ((str_arr[fd][length_nl] != '\n') && (str_arr[fd][length_nl] != '\0'))
+// 			length_nl++;
+// 		result = malloc(sizeof(char) * (length_nl + 1 + (str_arr[fd][length_nl] == '\n'))); //edit 6 from "sizeof(char *)" to "sizeof (char)"
+// 		if (!result)
+// 		{
+// 			free(str_arr[fd]);
+// 			str_arr[fd] = NULL; //edit 1
+// 			return (NULL);
+// 		}
+// 	}
+// 	else
+// 	{
+// 		free(str_arr[fd]);
+// 		str_arr[fd] = NULL;  //edit 1
+// 		return (NULL);
+// 	}
+// 	ft_strlcpy(result, str_arr[fd], length_nl + 1 + (str_arr[fd][length_nl] == '\n'));
+// 	result[length_nl + (str_arr[fd][length_nl] == '\n')] = '\0';			//edit 7 from "length_nl + 2" to "length_nl + 1"
+// 	str_arr[fd] = clear_array(str_arr[fd], length_nl);
+// 	return (result);
+// }
+
+// ------------ test: get_next_line function -----------
+// int main(void)
+// {
+// 	int 	fd;
+// 	char	*line;
+	
+// 	fd = open("test_empty.txt", O_RDONLY);
 	
 // 	while ((line = get_next_line(fd)) != NULL)
 // 	{
