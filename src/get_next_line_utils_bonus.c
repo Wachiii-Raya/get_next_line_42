@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wchumane <wchumane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/21 15:32:06 by wchumane          #+#    #+#             */
-/*   Updated: 2024/02/09 18:05:02 by wchumane         ###   ########.fr       */
+/*   Created: 2024/02/09 23:07:02 by wchumane          #+#    #+#             */
+/*   Updated: 2024/02/11 02:11:56 by wchumane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *str)
 {
@@ -49,7 +49,7 @@ char	*ft_strdup(const char *s1)
 	size_t	len;
 
 	len = ft_strlen(s1) + 1;
-	ptr = malloc(sizeof(char *) * len);
+	ptr = malloc(len);
 	if (!ptr)
 		return (NULL);
 	ft_strlcpy(ptr, s1, len);
@@ -76,23 +76,28 @@ char	*ft_strrchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_strjoin(char *s1, char const *s2)
 {
 	char	*ptr;
 	size_t	i;
+	size_t	j;
 
 	i = 0;
-	if (!s)
-		return (NULL);
-	if (ft_strlen(s) < start)
+	j = 0;
+	if (!s1 || !s2)
 		return (ft_strdup(""));
-	if (ft_strlen(s) - start < len)
-		len = ft_strlen(s) - start;
-	ptr = malloc(sizeof(char *) * (len + 1));
+	ptr = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!ptr)
+	{
+		free(s1);
 		return (NULL);
-	while (i < len && s[start])
-		ptr[i++] = s[start++];
-	ptr[i] = '\0';
+	}
+	while (s1[i])
+		ptr[j++] = s1[i++];
+	i = 0;
+	while (s2[i])
+		ptr[j++] = s2[i++];
+	ptr[j] = '\0';
+	free(s1);
 	return (ptr);
 }
