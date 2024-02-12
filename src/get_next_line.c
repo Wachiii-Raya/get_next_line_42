@@ -67,7 +67,7 @@ char	*gnl_init(char	**str_arr, int fd)
 {
 	char	*buffer;
 
-	if ((BUFFER_SIZE <= 0) || (fd < 0))
+	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
 	{
 		if (str_arr[fd])
 		{
@@ -109,12 +109,13 @@ char	*clone_case(int case_num, char **str_arr, int fd)
 
 char	*get_next_line(int fd)
 {
-	static char	*arr[4096];
+	static char	*arr[1024 + 1];
 	char		*ret;
 	char		*buffer;
 	size_t		len_nl;
 
 	len_nl = 0;
+	arr[1024] = NULL;
 	buffer = gnl_init(arr, fd);
 	if (!buffer)
 		return (NULL);
