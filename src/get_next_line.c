@@ -48,6 +48,7 @@ char	*read_line(int fd, char *str_array, char *buffer)
 		length = read(fd, buffer, BUFFER_SIZE);
 		if (length == -1)
 		{
+			free(str_array);
 			free(buffer);
 			return (NULL);
 		}
@@ -67,9 +68,9 @@ char	*gnl_init(char	**str_arr, int fd)
 {
 	char	*buffer;
 
-	if ((BUFFER_SIZE <= 0) || (fd < 0) || (read(fd, NULL, 0) == -1))
+	if ((BUFFER_SIZE <= 0) || (fd < 0))
 	{
-		if (str_arr[fd])
+		if (fd >= 0 && str_arr[fd])
 		{
 			free(str_arr[fd]);
 			str_arr[fd] = NULL;
